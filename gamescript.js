@@ -1,11 +1,14 @@
+//variables for the canvas
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext('2d');
+//variables and event listeners for the arrow keys
 let upPressed = false;
 let downPressed = false;
 let rightPressed = false;
 let leftPressed = false;
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+// These are describing the info about the character and the enemy
 let characterCoords ={
     x:25,
     y:25,
@@ -18,7 +21,8 @@ let enemyCoords ={
     dx:0,
     dy:0
 }
-function draw() {
+// This basically has the main game logic
+function gameLogic() {
     ctx.clearRect (0, 0, canvas.width, canvas.height);
     drawCharacter();
     drawEnemy();
@@ -27,6 +31,7 @@ function draw() {
     characterCoords.x += characterCoords.dx;
     characterCoords.y += characterCoords.dy;
 }
+// This one is pretty self-explanitory
 function drawCharacter() {
     if (rightPressed == true){
         characterCoords.dx = 1;
@@ -60,6 +65,7 @@ function drawCharacter() {
     ctx.rect(characterCoords.x, characterCoords.y, 5, 5);
     ctx.stroke();
 }
+// Same thing as drawCharacter but with the enemy
 function drawEnemy (){
     enemylogic();
     if (enemyCoords.x < 0){
@@ -81,6 +87,7 @@ function drawEnemy (){
     ctx.fill();
     ctx.closePath();
 }
+// Contains the main enemy AI
 function enemylogic(){
     if(characterCoords.x > enemyCoords.x){
         enemyCoords.dx = .5;
@@ -95,6 +102,7 @@ function enemylogic(){
         enemyCoords.dy = .5;
     }
 }
+//These next two functions contain the keyboard logic
 function keyUpHandler(e) {
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = false;
@@ -123,7 +131,8 @@ function keyDownHandler(e) {
         upPressed = true;
     }
 }
-setInterval(draw, 10);
+//Repeats draw every 10 miliseconds
+setInterval(gameLogic, 10);
 
 
 
