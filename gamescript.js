@@ -1,6 +1,7 @@
 //variables for the canvas
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext('2d');
+let i = 0;
 //variables and event listeners for the arrow keys
 let upPressed = false;
 let downPressed = false;
@@ -14,22 +15,23 @@ let characterCoords ={
     y:25,
     dx:0,
     dy:0
+} 
+class enemy {
+    constructor(rn, rn2){
+        this.x = rn;
+        this.y = rn2;
+        this.dx = 0;
+        this.dy = 0;
+    }
 }
-let enemyCoords ={
-    x:50,
-    y:50,
-    dx:0,
-    dy:0
-}
+let allEnemies = [new enemy(Math.round(Math.random() * 1000),(Math.round(Math.random() * 1000)))];
+console.log(allEnemies[i].x);
 // This basically has the main game logic
 function gameLogic() {
     ctx.clearRect (0, 0, canvas.width, canvas.height);
     drawCharacter();
     drawEnemy();
-    enemyCoords.x += enemyCoords.dx;
-    enemyCoords.y += enemyCoords.dy;
-    characterCoords.x += characterCoords.dx;
-    characterCoords.y += characterCoords.dy;
+    
 }
 // This one is pretty self-explanitory
 function drawCharacter() {
@@ -50,56 +52,56 @@ function drawCharacter() {
     }
     if (characterCoords.x > 795){
         characterCoords.x = 795;
-        console.log(characterCoords.x);
     }
     if (characterCoords.y < 0){
         characterCoords.y = 0;
     }
     if (characterCoords.y > 595){
         characterCoords.y = 595;
-        console.log(characterCoords.y);
     }
     ctx.beginPath();
     ctx.lineWidth = "2";
     ctx.strokeStyle = "black";
     ctx.rect(characterCoords.x, characterCoords.y, 5, 5);
     ctx.stroke();
+    characterCoords.x += characterCoords.dx;
+    characterCoords.y += characterCoords.dy;
 }
 // Same thing as drawCharacter but with the enemy
 function drawEnemy (){
-    enemylogic();
-    if (enemyCoords.x < 0){
-        enemyCoords.x = 0;
-    }
-    if (enemyCoords.x > 795){
-        characterCoords.x = 795;
-    }
-    if (enemyCoords.y < 0){
-        enemyCoords.y = 0;
-    }
-    if (enemyCoords.y > 595){
-        enemyCoords.y = 595;
-    }
-    ctx.beginPath();
-    ctx.lineWidth = "2";
-    ctx.strokeStyle = "black";
-    ctx.rect(enemyCoords.x, enemyCoords.y, 5, 5);
-    ctx.fill();
-    ctx.closePath();
-}
-// Contains the main enemy AI
-function enemylogic(){
-    if(characterCoords.x > enemyCoords.x){
-        enemyCoords.dx = .5;
-    }
-    if(characterCoords.x < enemyCoords.x){
-        enemyCoords.dx = -.5;
-    }
-    if (characterCoords.y < enemyCoords.y){
-        enemyCoords.dy = -.5;
-    }
-    if (characterCoords.y > enemyCoords.y){
-        enemyCoords.dy = .5;
+    for (i = 0; i < allEnemies.length; i++){
+        if (allEnemies[i].x < 0){
+            allEnemies[i].x = 0;
+        }
+        if (allEnemies[i].x > 795){
+            allEnemies[i].x = 795;
+        }
+        if (allEnemies[i].y < 0){
+            allEnemies[i].y = 0;
+        }
+        if (allEnemies[i].y > 595){
+            allEnemies[i].y = 595;
+        }
+        if(characterCoords.x > allEnemies[i].x){
+            allEnemies[i].dx = .5;
+        }
+        if(characterCoords.x < allEnemies[i].x){
+            allEnemies[i].dx = -.5;
+        }
+        if (characterCoords.y < allEnemies[i].y){
+            allEnemies[i].dy = -.5;
+        }
+        if (characterCoords.y > allEnemies[i].y){
+            allEnemies[i].dy = .5;
+        }
+        ctx.beginPath();
+        ctx.lineWidth = "2";
+        ctx.strokeStyle = "black";
+        ctx.rect(allEnemies[i].x, allEnemies[i].y, 5, 5);
+        ctx.fill();
+        ctx.closePath();
+        allEnemies[i].x += allEnemies[i].dx;
+        allEnemies[i].y += allEnemies[i].dy;
     }
 }
 //These next two functions contain the keyboard logic
