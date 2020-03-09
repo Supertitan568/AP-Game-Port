@@ -7,6 +7,7 @@ let upPressed = false;
 let downPressed = false;
 let rightPressed = false;
 let leftPressed = false;
+let ePressed = false;
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 // These are describing the info about the character and the enemy
@@ -16,22 +17,37 @@ let characterCoords ={
     dx:0,
     dy:0
 } 
+let itemCoords ={
+    x:0,
+    y:5,
+    active: true
+}
+let characterPower = true;
 class enemy {
     constructor(rn, rn2){
         this.x = rn;
         this.y = rn2;
+        this.is = Math.random();
         this.dx = 0;
         this.dy = 0;
     }
 }
-let allEnemies = [new enemy(Math.round(Math.random() * 1000),(Math.round(Math.random() * 1000)))];
-console.log(allEnemies[i].x);
-// This basically has the main game logic
+let xdiff;
+let ydiff;
+let allEnemies = new Array (new enemy(Math.round(Math.random() * 1000),(Math.round(Math.random() * 1000))));
+if (allEnemies[allEnemies.length - 1].is > .8){
+    allEnemies[allEnemies.length - 1].is = allEnemies[allEnemies.length - 1].is - .2;
+}
+if (allEnemies[allEnemies.length - 1].is < .2) {
+    allEnemies[allEnemies.length - 1].is = allEnemies[allEnemies.length - 1].is + .2;
+}
+let allDeadEnemies = new Array();
+// This just has the main game logic
 function gameLogic() {
     ctx.clearRect (0, 0, canvas.width, canvas.height);
     drawCharacter();
+    drawItem();
     drawEnemy();
-    
 }
 // This one is pretty self-explanitory
 function drawCharacter() {
@@ -67,6 +83,16 @@ function drawCharacter() {
     characterCoords.x += characterCoords.dx;
     characterCoords.y += characterCoords.dy;
 }
+function drawItem (){
+    if(itemCoords.active == true){
+        ctx.beginPath();
+        ctx.lineWidth = "2";
+        ctx.strokeStyle = "yellow";
+        ctx.rect(itemCoords.x, itemCoords.y, 5, 5);
+        ctx.stroke();
+
+    }
+}
 // Same thing as drawCharacter but with the enemy
 function drawEnemy (){
     for (i = 0; i < allEnemies.length; i++){
@@ -83,16 +109,16 @@ function drawEnemy (){
             allEnemies[i].y = 595;
         }
         if(characterCoords.x > allEnemies[i].x){
-            allEnemies[i].dx = .5;
+            allEnemies[i].dx = allEnemies[i].is;
         }
         if(characterCoords.x < allEnemies[i].x){
-            allEnemies[i].dx = -.5;
+            allEnemies[i].dx = -allEnemies[i].is;
         }
         if (characterCoords.y < allEnemies[i].y){
-            allEnemies[i].dy = -.5;
+            allEnemies[i].dy = -allEnemies[i].is;
         }
         if (characterCoords.y > allEnemies[i].y){
-            allEnemies[i].dy = .5;
+            allEnemies[i].dy = allEnemies[i].is;
         }
         ctx.beginPath();
         ctx.lineWidth = "2";
@@ -102,6 +128,27 @@ function drawEnemy (){
         ctx.closePath();
         allEnemies[i].x += allEnemies[i].dx;
         allEnemies[i].y += allEnemies[i].dy;
+        despawnEnemy(i);
+    }
+}
+function spawnEnemy (){
+    allEnemies.push(new enemy(Math.round(Math.random() * 1000),(Math.round(Math.random() * 1000))));
+    if (allEnemies[allEnemies.length - 1].is > .8){
+        allEnemies[allEnemies.length - 1].is = allEnemies[allEnemies.length - 1].is - .2;
+    }
+    if (allEnemies[allEnemies.length - 1].is < .2) {
+        allEnemies[allEnemies.length - 1].is = allEnemies[allEnemies.length - 1].is + .2;
+    }
+}
+function despawnEnemy (i) {
+    let xdiff = characterCoords.x - allEnemies[i].x;
+    let ydiff = characterCoords.y - allEnemies[i].y;
+    if (characterPower == true && xdiff < 5 && ydiff < 5 && xdiff > -5 && ydiff > -5){
+        allEnemies.splice(i,1);
+        console.log(i);
+        for(let t = 0; t < 2; t++){
+            spawnEnemy();
+        }
     }
 }
 //These next two functions contain the keyboard logic
@@ -132,15 +179,9 @@ function keyDownHandler(e) {
     else if(e.key == "Up" || e.key == "ArrowUp"){
         upPressed = true;
     }
+    else if(e.key == "e" || e.key == "KeyE"){
+        spawnEnemy();
+    }
 }
-//Repeats draw every 10 miliseconds
+//Repeats gameLogic every 10 miliseconds
 setInterval(gameLogic, 10);
-
-
-
-
-
-
-
-
-
