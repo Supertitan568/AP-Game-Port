@@ -2,6 +2,7 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext('2d');
 let i = 0;
+let score = 0;
 //variables and event listeners for the arrow keys
 let upPressed = false;
 let downPressed = false;
@@ -43,7 +44,6 @@ if (allEnemies[allEnemies.length - 1].is > .8){
 if (allEnemies[allEnemies.length - 1].is < .2) {
     allEnemies[allEnemies.length - 1].is = allEnemies[allEnemies.length - 1].is + .2;
 }
-let allDeadEnemies = new Array();
 // This just has the main game logic
 function gameLogic() {
     ctx.clearRect (0, 0, canvas.width, canvas.height);
@@ -157,11 +157,15 @@ function despawnItem (i){
         allItems.splice(i,1);
     }
 }
+function scorecounter (){
+    document.getElementById("scorecounter").innerHTML = "Score: " + score;
+}
 function despawnEnemy (i) {
     let xdiff = characterCoords.x - allEnemies[i].x;
     let ydiff = characterCoords.y - allEnemies[i].y;
     if (characterPower == true && xdiff < 5 && ydiff < 5 && xdiff > -5 && ydiff > -5){
-        console.log(allEnemies);
+        score ++;
+        scorecounter();
         allEnemies.splice(i,1);
         for(let t = 0; t < 2; t++){
             spawnEnemy();
