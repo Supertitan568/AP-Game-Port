@@ -16,13 +16,14 @@ let characterCoords ={
     y:25,
     dx:0,
     dy:0
-} 
-let itemCoords ={
-    x:0,
-    y:5,
-    active: true
 }
-let characterPower = true;
+let characterPower = false;
+class item {
+    constructor(rn, rn2){
+        this.x = rn;
+        this.y = rn2;
+    }
+}
 class enemy {
     constructor(rn, rn2){
         this.x = rn;
@@ -34,6 +35,7 @@ class enemy {
 }
 let xdiff;
 let ydiff;
+let allItems = new Array(new item((Math.round(Math.random()) * 780), Math.round(Math.random() * 600)));
 let allEnemies = new Array (new enemy(Math.round(Math.random() * 1000),(Math.round(Math.random() * 1000))));
 if (allEnemies[allEnemies.length - 1].is > .8){
     allEnemies[allEnemies.length - 1].is = allEnemies[allEnemies.length - 1].is - .2;
@@ -48,6 +50,7 @@ function gameLogic() {
     drawCharacter();
     drawItem();
     drawEnemy();
+    drawItem();
 }
 // This one is pretty self-explanitory
 function drawCharacter() {
@@ -84,13 +87,14 @@ function drawCharacter() {
     characterCoords.y += characterCoords.dy;
 }
 function drawItem (){
-    if(itemCoords.active == true){
+    if(allItems[0] != undefined){
+        for(i = 0; i < allItems.length; i++)
         ctx.beginPath();
         ctx.lineWidth = "2";
         ctx.strokeStyle = "yellow";
-        ctx.rect(itemCoords.x, itemCoords.y, 5, 5);
+        ctx.rect(allItems[i-1].x, allItems[i-1].y, 5, 5);
         ctx.stroke();
-
+        despawnItem(i-1);
     }
 }
 // Same thing as drawCharacter but with the enemy
@@ -131,6 +135,10 @@ function drawEnemy (){
         despawnEnemy(i);
     }
 }
+function spawnItem (){
+    allItems.push(new item(Math.round(Math.random() * 800),(Math.round(Math.random() * 600))));
+    characterPower = false;
+}
 function spawnEnemy (){
     allEnemies.push(new enemy(Math.round(Math.random() * 1000),(Math.round(Math.random() * 1000))));
     if (allEnemies[allEnemies.length - 1].is > .8){
@@ -140,12 +148,21 @@ function spawnEnemy (){
         allEnemies[allEnemies.length - 1].is = allEnemies[allEnemies.length - 1].is + .2;
     }
 }
+function despawnItem (i){
+    xdiff = characterCoords.x - allItems[i].x;
+    ydiff = characterCoords.y - allItems[i].y;
+    if (xdiff < 5 && ydiff < 5 && xdiff > -5 && ydiff > -5){
+        characterPower = true;
+        setTimeout(spawnItem,5000);
+        allItems.splice(i,1);
+    }
+}
 function despawnEnemy (i) {
     let xdiff = characterCoords.x - allEnemies[i].x;
     let ydiff = characterCoords.y - allEnemies[i].y;
     if (characterPower == true && xdiff < 5 && ydiff < 5 && xdiff > -5 && ydiff > -5){
+        console.log(allEnemies);
         allEnemies.splice(i,1);
-        console.log(i);
         for(let t = 0; t < 2; t++){
             spawnEnemy();
         }
