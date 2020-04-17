@@ -36,6 +36,8 @@ class enemy {
 }
 let xdiff;
 let ydiff;
+let interval;
+let time = 0;
 let allItems = new Array(new item((Math.round(Math.random()) * 780), Math.round(Math.random() * 600)));
 let allEnemies = new Array (new enemy(Math.round(Math.random() * 1000),(Math.round(Math.random() * 1000))));
 if (allEnemies[allEnemies.length - 1].is > .8){
@@ -55,16 +57,20 @@ function gameLogic() {
 // This one is pretty self-explanitory
 function drawCharacter() {
     if (rightPressed == true){
-        characterCoords.dx = 1;
+        characterCoords.dx = 2;
+        console.log(characterCoords.dx);
     }
-    else if (leftPressed == true){
-        characterCoords.dx = -1
+    if (leftPressed == true){
+        characterCoords.dx = -2;
+        console.log(characterCoords.dx);
     }
-    else if (downPressed == true){
-        characterCoords.dy = 1;
+    if (downPressed == true){
+        characterCoords.dy = 2;
+        console.log(characterCoords.dy);
     }
-    else if (upPressed == true){
-        characterCoords.dy = -1;
+    if (upPressed == true){
+        characterCoords.dy = -2;
+        console.log(characterCoords.dy);
     }
     if (characterCoords.x < 0){
         characterCoords.x = 0;
@@ -85,6 +91,22 @@ function drawCharacter() {
     ctx.stroke();
     characterCoords.x += characterCoords.dx;
     characterCoords.y += characterCoords.dy;
+    if (rightPressed == false){
+        characterCoords.dx = 0;
+        console.log(characterCoords.dx)
+    }
+    if (leftPressed == false){
+        characterCoords.dx = 0;
+        console.log(characterCoords.dx);
+    }
+    if (downPressed == false){
+        characterCoords.dy = 0;
+        console.log(characterCoords.dy);
+    }
+    if (upPressed == false){
+        characterCoords.dy = 0;
+        console.log(characterCoords.dy);
+    }
 }
 function drawItem (){
     if(allItems[0] != undefined){
@@ -133,6 +155,7 @@ function drawEnemy (){
         allEnemies[i].x += allEnemies[i].dx;
         allEnemies[i].y += allEnemies[i].dy;
         despawnEnemy(i);
+        despawnCharacter(i);
     }
 }
 function spawnItem (){
@@ -148,29 +171,44 @@ function spawnEnemy (){
         allEnemies[allEnemies.length - 1].is = allEnemies[allEnemies.length - 1].is + .2;
     }
 }
+function despawnCharacter (i){
+    xdiff = characterCoords.x - allEnemies[i].x;
+    ydiff = characterCoords.y - allEnemies[i].y;
+    if (xdiff < 5 && ydiff < 5 && xdiff > -5 && ydiff > -5 && characterPower == false){
+        window.location.replace("gameover.html");
+    }
+}
+
 function despawnItem (i){
     xdiff = characterCoords.x - allItems[i].x;
     ydiff = characterCoords.y - allItems[i].y;
     if (xdiff < 5 && ydiff < 5 && xdiff > -5 && ydiff > -5){
+        time = 5;
+        document.getElementById("scorecounter").innerHTML = "Score: " + score + "     Powerup time: " + time;
+        interval = setInterval(timer,1000); 
         characterPower = true;
         setTimeout(spawnItem,5000);
         allItems.splice(i,1);
     }
-}
-function scorecounter (){
-    document.getElementById("scorecounter").innerHTML = "Score: " + score;
 }
 function despawnEnemy (i) {
     let xdiff = characterCoords.x - allEnemies[i].x;
     let ydiff = characterCoords.y - allEnemies[i].y;
     if (characterPower == true && xdiff < 5 && ydiff < 5 && xdiff > -5 && ydiff > -5){
         score ++;
-        scorecounter();
         allEnemies.splice(i,1);
         for(let t = 0; t < 2; t++){
             spawnEnemy();
         }
     }
+}
+function timer (){ 
+    time --; 
+    document.getElementById("scorecounter").innerHTML = "Score: " + score + "     Powerup time: " + time;
+    if (time <= 0){
+        clearInterval(interval);
+    }
+    
 }
 //These next two functions contain the keyboard logic
 function keyUpHandler(e) {
